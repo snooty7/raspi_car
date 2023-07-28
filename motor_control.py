@@ -1,9 +1,11 @@
-from flask import Flask
+from flask import Flask, render_template, Response
 from flask import request
 from Raspi_MotorHAT import Raspi_MotorHAT, Raspi_DCMotor
 
 import time
 import atexit
+import threading
+#import picamera
 
 app = Flask(__name__)
 
@@ -12,7 +14,6 @@ myMotor = mh.getMotor(3)
 myMotor.setSpeed(150)
 myMotor.run(Raspi_MotorHAT.FORWARD)
 myMotor.run(Raspi_MotorHAT.RELEASE)
-
 
 def turnOffMotors():
     mh.getMotor(1).run(Raspi_MotorHAT.RELEASE)

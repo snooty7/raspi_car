@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Motor Control</title>
+    <style>
+        #controls {
+            margin-top: 20px;
+        }
+        #speedSlider {
+            width: 200px;
+        }
+        #directionButtons {
+            margin-top: 20px;
+        }
+        #directionButtons button {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+  <h1>Motor Control</h1>
+  <div id="controls">
+      <input id="speedSlider" type="range" min="0" max="255" step="1" value="128">
+      <div id="directionButtons">
+          <button id="forward">▲</button>
+          <button id="left">◀</button>
+          <button id="stop">■</button>
+          <button id="right">▶</button>
+          <button id="backward">▼</button>
+      </div>
+  </div>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var speedSlider = document.getElementById('speedSlider');
+          var directionButtons = document.getElementById('directionButtons').getElementsByTagName('button');
+
+          speedSlider.addEventListener('input', function() {
+              updateMotor();
+          });
+
+          for (var i = 0; i < directionButtons.length; i++) {
+              directionButtons[i].addEventListener('mousedown', function() {
+                  updateMotor();
+              });
+
+              directionButtons[i].addEventListener('mouseup', function() {
+                  stopMotor();
+              });
+
+              directionButtons[i].addEventListener('touchstart', function() {
+                  updateMotor();
+              });
+
+              directionButtons[i].addEventListener('touchend', function() {
+                  stopMotor();
+              });
+          }
+
+          function updateMotor() {
+              var speed = speedSlider.value;
+              var direction;
+
+              if (document.getElementById('forward').ontouchstart !== null) {
+                  // Touch event
+                  direction = this.id;
+              } else {
+                  // Mouse event
+                  direction = event.target.id;
+              }
+
+              fetch('/move', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                  },
+                  body: 'direction=' + direction + '&speed=' + speed
+              });
+          }
+
+          function stopMotor() {
+              fetch('/move', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                  },
+                  body: 'direction=stop&speed=0'
+              });
+          }
+      });
+  </script>
+</body>
+</html>
+
+
+
